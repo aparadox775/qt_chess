@@ -2,5 +2,18 @@
     <qresource prefix="/">
         <file>icons/whitePawn.png</file>
         <file>icons/blackPawn.png</file>
+        <file>icons/bb.png</file>
+        <file>icons/bk.png</file>
+        <file>icons/bn.png</file>
+        <file>icons/board.png</file>
+        <file>icons/bp.png</file>
+        <file>icons/bq.png</file>
+        <file>icons/br.png</file>
+        <file>icons/wb.png</file>
+        <file>icons/wk.png</file>
+        <file>icons/wn.png</file>
+        <file>icons/wp.png</file>
+        <file>icons/wq.png</file>
+        <file>icons/wr.png</file>
     </qresource>
 </RCC>
