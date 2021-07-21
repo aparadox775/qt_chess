@@ -633,6 +633,13 @@
     <item row="17" column="1" rowspan="2" colspan="2">
      <widget class="QWidget" name="widget_2" native="true"/>
     </item>
+    <item row="7" column="0">
+     <widget class="QPushButton" name="undoButt">
+      <property name="text">
+       <string>&amp;Undo</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -650,6 +657,7 @@
     </property>
     <addaction name="startNewGmae"/>
     <addaction name="quitMenu"/>
+    <addaction name="actionundo"/>
    </widget>
    <addaction name="menufile"/>
   </widget>
@@ -695,6 +703,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionundo">
+   <property name="text">
+    <string>undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
  </widget>

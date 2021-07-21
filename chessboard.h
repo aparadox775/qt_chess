@@ -4,6 +4,14 @@
 #include <QObject>
 #include <QVector>
 
+struct move
+{
+  int formerCol = 1;
+    int formerRank = 1;
+    int toCol = 1;
+    int toRank = 1;
+};
+
 class ChessBoard : public QObject
 {
     Q_OBJECT
@@ -19,6 +27,10 @@ public:
     void movePiece(int fromColumn, int fromRank,
                    int toColumn, int toRank);
     void setFen(const QString &fen);
+    move undoMove();
+    void setUndoable(bool);
+    bool getUndoable() const;
+
 signals:
     void ranksChanged(int);
     void columnsChanged(int);
@@ -29,6 +41,8 @@ private:
     int m_columns;
     QVector<char> m_boardData;
     bool setDataInternal(int column, int rank, char value);
+    move m_undoMove;
+    bool undoable = false;
 protected:
     void setRanks(int newRanks);
     void setColumns(int newColumns);

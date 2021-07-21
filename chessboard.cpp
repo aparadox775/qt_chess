@@ -70,11 +70,26 @@ bool ChessBoard::setDataInternal(int column, int rank, char value)
     return true;
 }
 
+bool ChessBoard::getUndoable() const
+{
+    return undoable;
+}
+
 void ChessBoard::movePiece(int fromColumn, int fromRank,
                            int toColumn, int toRank)
 {
     setData(toColumn, toRank, data(fromColumn, fromRank));
     setData(fromColumn, fromRank, ' ');
+
+
+
+
+        m_undoMove.toCol = fromColumn;
+        m_undoMove.toRank = fromRank;
+        m_undoMove.formerCol = toColumn;
+        m_undoMove.formerRank = toRank;
+
+    undoable = true;
 }
 void ChessBoard::setFen(const QString &fen)
 {
@@ -111,4 +126,14 @@ void ChessBoard::setFen(const QString &fen)
         }
     }
     emit boardReset();
+}
+
+move ChessBoard::undoMove()
+{
+    return m_undoMove;
+}
+
+void ChessBoard::setUndoable(bool isUndoable)
+{
+    undoable = isUndoable;
 }

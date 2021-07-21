@@ -104,6 +104,7 @@ void ChessView::paintEvent(QPaintEvent *)
             painter.restore();
         }
     }
+    drawHighlights(&painter);
     for (int r = m_board->ranks(); r > 0; --r)
     {
         for (int c = 1; c <= m_board->columns(); ++c)
@@ -161,6 +162,15 @@ void ChessView::drawPiece(QPainter *painter, int column, int rank)
     }
 }
 
+void ChessView::undo()
+{
+    if(m_board->getUndoable())
+    {
+        m_board->movePiece(m_board->undoMove().formerCol,m_board->undoMove().formerRank,m_board->undoMove().toCol,m_board->undoMove().toRank);
+        m_board->setUndoable(false);
+    }
+}
+
 QPoint ChessView::fieldAt(const QPoint &pt) const
 {
     if (!m_board)
@@ -191,4 +201,29 @@ if(pt.isNull()) {
 return;
 }
 emit clicked(pt);
+}
+
+void ChessView::addHighlight(Highlight *hl)
+{
+    m_highlights.append(hl);
+    update();
+}
+
+void ChessView::removeHighlight(Highlight *hl)
+{
+    m_highlights.removeOne(hl);
+    update();
+}
+void ChessView::drawHighlights(QPainter *painter)
+{
+    for(int idx = 0; idx < highlightCount(); ++idx)
+    {
+        Highlight *hl = highlight(idx);
+        if(hl->type() == FieldHighlight::Type)
+        {
+            FieldHighlight *fhl = static_cast<FieldHighlight*>(hl);
+            QRect rect = fieldRect(fhl->column(), fhl->rank());
+            painter->fillRect(rect, fhl->color());
+        }
+    }
 }

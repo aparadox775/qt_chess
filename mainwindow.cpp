@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    m_selectedField = nullptr;
     m_view = new ChessView;
     m_algorithm = new ChessAlgorithm(this);
     m_algorithm->newGame();
@@ -43,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widget, &ChessView::clicked,
             this,
             &MainWindow::viewClicked);
+    connect(ui->undoButt,&QPushButton::clicked,ui->widget,&ChessView::undo);
+    connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
     this->setWindowTitle("chess");
 }
 
@@ -84,20 +86,31 @@ void MainWindow::quit()
     this->close();
 }
 
+
 void MainWindow::viewClicked(const QPoint &field)
 {
-    if (m_clickPoint.isNull())
+    if(m_clickPoint.isNull())
     {
-        m_clickPoint = field;
-    }
-    else
+        if(ui->widget->board()->data(field.x(), field.y()) != ' ')
+        {
+            m_clickPoint = field;
+            m_selectedField = new ChessView::FieldHighlight(
+            field.x(), field.y(), QColor(255, 0, 0, 50)
+            );
+            ui->widget->addHighlight(m_selectedField);
+        }
+    } else
     {
-        if (field != m_clickPoint)
+        if(field != m_clickPoint)
         {
             ui->widget->board()->movePiece(
-                m_clickPoint.x(), m_clickPoint.y(),
-                field.x(), field.y());
-        }
+            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
+            );
+        };
         m_clickPoint = QPoint();
+        ui->widget->removeHighlight(m_selectedField);
+        delete m_selectedField;
+        m_selectedField = nullptr;
     }
 }
+
