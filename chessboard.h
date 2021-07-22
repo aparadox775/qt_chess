@@ -30,6 +30,9 @@ public:
     move undoMove();
     void setUndoable(bool);
     bool getUndoable() const;
+public slots:
+    void undo();
+
 
 signals:
     void ranksChanged(int);
@@ -40,6 +43,7 @@ private:
     int m_ranks;
     int m_columns;
     QVector<char> m_boardData;
+    QVector<char> m_lastBoardData;
     bool setDataInternal(int column, int rank, char value);
     move m_undoMove;
     bool undoable = false;

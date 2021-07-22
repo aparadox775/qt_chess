@@ -21,9 +21,10 @@ private slots:
     void initNewGame();
     void quit();
     void viewClicked(const QPoint &field);
+    void undo();
 private:
     Ui::MainWindow *ui;
-    ChessView *m_view;
+    ChessView *m_undoView;
     ChessAlgorithm *m_algorithm;
     QPoint m_clickPoint;
     ChessView::FieldHighlight *m_selectedField;

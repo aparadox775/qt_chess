@@ -75,19 +75,26 @@ bool ChessBoard::getUndoable() const
     return undoable;
 }
 
+void ChessBoard::undo()
+{
+    m_boardData = m_lastBoardData;
+    setUndoable(false);
+    emit dataChanged(m_undoMove.toCol,m_undoMove.toRank);
+    emit dataChanged(m_undoMove.formerCol,m_undoMove.formerRank);
+}
+
 void ChessBoard::movePiece(int fromColumn, int fromRank,
                            int toColumn, int toRank)
 {
+    m_lastBoardData = m_boardData;
+
     setData(toColumn, toRank, data(fromColumn, fromRank));
     setData(fromColumn, fromRank, ' ');
 
-
-
-
-        m_undoMove.toCol = fromColumn;
-        m_undoMove.toRank = fromRank;
-        m_undoMove.formerCol = toColumn;
-        m_undoMove.formerRank = toRank;
+    m_undoMove.toCol = fromColumn;
+    m_undoMove.toRank = fromRank;
+    m_undoMove.formerCol = toColumn;
+    m_undoMove.formerRank = toRank;
 
     undoable = true;
 }

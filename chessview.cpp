@@ -166,7 +166,7 @@ void ChessView::undo()
 {
     if(m_board->getUndoable())
     {
-        m_board->movePiece(m_board->undoMove().formerCol,m_board->undoMove().formerRank,m_board->undoMove().toCol,m_board->undoMove().toRank);
+        m_board->undo();
         m_board->setUndoable(false);
     }
 }

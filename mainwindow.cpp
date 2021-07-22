@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     m_selectedField = nullptr;
-    m_view = new ChessView;
+//    m_view = new ChessView;
     m_algorithm = new ChessAlgorithm(this);
     m_algorithm->newGame();
     ui->widget->setBoard(m_algorithm->board());
@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
             &MainWindow::viewClicked);
     connect(ui->undoButt,&QPushButton::clicked,ui->widget,&ChessView::undo);
     connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
+//    connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::undo);
     this->setWindowTitle("chess");
 }
 
@@ -89,6 +90,7 @@ void MainWindow::quit()
 
 void MainWindow::viewClicked(const QPoint &field)
 {
+    m_undoView = ui->widget;
     if(m_clickPoint.isNull())
     {
         if(ui->widget->board()->data(field.x(), field.y()) != ' ')
@@ -112,5 +114,11 @@ void MainWindow::viewClicked(const QPoint &field)
         delete m_selectedField;
         m_selectedField = nullptr;
     }
+}
+
+void MainWindow::undo()
+{
+    ui->widget = m_undoView;
+
 }
 
