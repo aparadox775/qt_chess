@@ -15,8 +15,8 @@ class ChessView : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QSize fieldSize
-                READ fieldSize WRITE setFieldSize
-                NOTIFY fieldSizeChanged)
+                   READ fieldSize WRITE setFieldSize
+                       NOTIFY fieldSizeChanged)
 public:
     class Highlight
     {
@@ -29,13 +29,17 @@ public:
     class FieldHighlight : public Highlight
     {
     public:
-        enum { Type = 1 };
+        enum
+        {
+            Type = 1
+        };
         FieldHighlight(int column, int rank, QColor color)
-        : m_field(column, rank), m_color(color) {}
+            : m_field(column, rank), m_color(color) {}
         inline int column() const { return m_field.x(); }
         inline int rank() const { return m_field.y(); }
         inline QColor color() const { return m_color; }
         int type() const { return Type; }
+
     private:
         QPoint m_field;
         QColor m_color;
@@ -67,12 +71,13 @@ public:
     {
         return m_highlights.size();
     }
+
 private:
     QPointer<ChessBoard> m_board;
     QMap<char, QIcon> m_pieces;
     QSize m_fieldSize;
     void drawPiece(QPainter *painter, int column, int rank);
-    QList<Highlight*> m_highlights;
+    QList<Highlight *> m_highlights;
     void drawHighlights(QPainter *painter);
 signals:
     void clicked(const QPoint &);

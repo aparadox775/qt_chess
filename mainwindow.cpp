@@ -1,5 +1,8 @@
+#include "foxandhounds.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#include "prochess.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -7,7 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     m_selectedField = nullptr;
 //    m_view = new ChessView;
-    m_algorithm = new ChessAlgorithm(this);
+    m_algorithm = new ProChess(this);
+
     m_algorithm->newGame();
     ui->widget->setBoard(m_algorithm->board());
     ui->widget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
@@ -44,7 +48,9 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             &MainWindow::viewClicked);
     connect(ui->undoButt,&QPushButton::clicked,ui->widget,&ChessView::undo);
+    connect(ui->undoButt,&QPushButton::clicked,dynamic_cast<ProChess *>(m_algorithm),&ProChess::switchPlayer);
     connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
+    ui->undoButt->setDisabled(true);
 //    connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::undo);
     this->setWindowTitle("chess");
 }
@@ -90,6 +96,7 @@ void MainWindow::quit()
 
 void MainWindow::viewClicked(const QPoint &field)
 {
+
     m_undoView = ui->widget;
     if(m_clickPoint.isNull())
     {
@@ -105,14 +112,16 @@ void MainWindow::viewClicked(const QPoint &field)
     {
         if(field != m_clickPoint)
         {
-            ui->widget->board()->movePiece(
-            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
-            );
+              m_algorithm->move(m_clickPoint, field);
+//            ui->widget->board()->movePiece(
+//            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
+//            );
         };
         m_clickPoint = QPoint();
         ui->widget->removeHighlight(m_selectedField);
         delete m_selectedField;
         m_selectedField = nullptr;
+        ui->undoButt->setEnabled(true);
     }
 }
 

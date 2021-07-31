@@ -9,19 +9,25 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    chessalgback.cpp \
     chessalgorithm.cpp \
     chessboard.cpp \
     chessview.cpp \
     configurationdialog.cpp \
+    foxandhounds.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    prochess.cpp
 
 HEADERS += \
+    chessalgback.h \
     chessalgorithm.h \
     chessboard.h \
     chessview.h \
     configurationdialog.h \
-    mainwindow.h
+    foxandhounds.h \
+    mainwindow.h \
+    prochess.h
 
 FORMS += \
     configurationdialog.ui \

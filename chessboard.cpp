@@ -86,16 +86,20 @@ void ChessBoard::undo()
 void ChessBoard::movePiece(int fromColumn, int fromRank,
                            int toColumn, int toRank)
 {
+    //last Board data for undo;
     m_lastBoardData = m_boardData;
 
     setData(toColumn, toRank, data(fromColumn, fromRank));
     setData(fromColumn, fromRank, ' ');
 
+    //we store the last move for emiting dataChanged signal in undo slot
     m_undoMove.toCol = fromColumn;
     m_undoMove.toRank = fromRank;
     m_undoMove.formerCol = toColumn;
     m_undoMove.formerRank = toRank;
-
+//    QObject * temp = this->parent();
+//    dynamic_cast<>()
+//    this->parent()->hi()
     undoable = true;
 }
 void ChessBoard::setFen(const QString &fen)
