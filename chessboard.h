@@ -19,6 +19,7 @@ class ChessBoard : public QObject
     Q_PROPERTY(int columns READ columns NOTIFY columnsChanged)
 public:
     explicit ChessBoard(int rank,int columns,QObject *parent = nullptr);
+    ChessBoard(ChessBoard *);
     int ranks() const;
     int columns() const;
     void initBoard();

@@ -9,6 +9,15 @@ ChessBoard::ChessBoard(int rank, int columns, QObject *parent) : QObject(parent)
     initBoard();
 }
 
+ChessBoard::ChessBoard(ChessBoard *clone)
+{
+    this->setRanks(clone->ranks());
+    this->setColumns(clone->columns());
+    initBoard();
+    this->m_boardData = clone->m_boardData;
+//    this->
+}
+
 int ChessBoard::ranks() const
 {
     return this->m_ranks;

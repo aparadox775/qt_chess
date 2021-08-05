@@ -14,7 +14,9 @@ SOURCES += \
     chessboard.cpp \
     chessview.cpp \
     configurationdialog.cpp \
+    coordinate.cpp \
     foxandhounds.cpp \
+    history.cpp \
     main.cpp \
     mainwindow.cpp \
     prochess.cpp
@@ -25,7 +27,9 @@ HEADERS += \
     chessboard.h \
     chessview.h \
     configurationdialog.h \
+    coordinate.h \
     foxandhounds.h \
+    history.h \
     mainwindow.h \
     prochess.h
 
