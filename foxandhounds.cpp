@@ -45,6 +45,7 @@ bool FoxAndHounds::move(int colFrom, int rankFrom,
     // is white advancing?
     if (currentPlayer() == Player1 && rankTo <= rankFrom)
         return false;
+        
     board()->movePiece(colFrom, rankFrom, colTo, rankTo);
     // make the move
     if (currentPlayer() == Player2)
