@@ -18,6 +18,7 @@ public:
 private:
     ChessAlGBack *m_back;
     history *m_history;
+    bool checkMate(char color);
 //    bool foxCanMove() const;
 //    bool emptyByOffset(int x, int y) const;
 public slots:
@@ -25,6 +26,8 @@ public slots:
 signals:
     void moveMade();
     void check(char);
+    void elimPice(char);
+    void gameOver(char);
 };
 
 #endif // PROCHESS_H

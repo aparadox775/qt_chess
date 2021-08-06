@@ -36,7 +36,7 @@ public:
     bool movepawn(int,int,int,int,ChessBoard *);
     bool moveQueen(int,int,int,int,ChessBoard *);
     char checkCheck(ChessBoard *);
-//    bool checkCheckW(ChessBoard *);
+    bool checkCheckW(ChessBoard *);
     QVector <coordinate> bishopPMoves(int col,int rank,ChessBoard *,char color);
     QVector <coordinate> rokhPMoves(int col,int rank,ChessBoard *,char color);
     QVector <coordinate> knightPMoves(int col,int rank);
@@ -51,6 +51,7 @@ private:
     char board[8][8];
 signals:
     void changePawn(char);
+    void elimPice(char);
 };
 
 #endif // CHESSALGBACK_H

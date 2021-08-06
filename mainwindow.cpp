@@ -35,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //for asking for name at begining
     //    initNewGame();
+    ui->undoButt->setDisabled(true);
 
     //seting width fo push buttons
     ui->quit->setFixedWidth(ui->newGame->width());
@@ -45,16 +46,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->quit, &QPushButton::clicked, this, &MainWindow::quit);
     connect(ui->startNewGmae, &QAction::triggered, this, &MainWindow::initNewGame);
     connect(ui->quitMenu, &QAction::triggered, this, &MainWindow::quit);
-    connect(ui->widget, &ChessView::clicked,
-            this,
-            &MainWindow::viewClicked);
+    connect(ui->widget, &ChessView::clicked,this,&MainWindow::viewClicked);
     connect(ui->undoButt,&QPushButton::clicked,ui->widget,&ChessView::undo);
     connect(ui->undoButt,&QPushButton::clicked,dynamic_cast<ProChess *>(m_algorithm),&ProChess::switchPlayer);
     connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
-    ui->undoButt->setDisabled(true);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::moveMade,this,&MainWindow::moved);
     connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::undo);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::check,this,&MainWindow::Check);
+    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::elimPice,this,&MainWindow::elimPice);
+    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::gameOver,this,&MainWindow::checkmatePoint);
+//    connect(m_back,&ChessAlGBack::elimPice,this,&MainWindow::thread);
     this->setWindowTitle("chess");
 }
 
@@ -111,7 +112,9 @@ void MainWindow::viewClicked(const QPoint &field)
             field.x(), field.y(), QColor(255, 0, 0, 75)
             );
             ui->widget->addHighlight(m_selectedField);
-            highlightPosible(field.x(),field.y());
+//
+            highlight(field.x(),field.y());
+
         }
     } else
     {
@@ -121,14 +124,20 @@ void MainWindow::viewClicked(const QPoint &field)
 //            ui->widget->board()->movePiece(
 //            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
 //            );
+              posible(field.x(),field.y(),true);
+              updatePoints();
         };
         m_clickPoint = QPoint();
         ui->widget->removeHighlight(m_selectedField);
         removeHighlight();
         delete m_selectedField;
         m_selectedField = nullptr;
+
         updateUndo();
+        updatePoints();
     }
+
+
 }
 
 void MainWindow::undo()
@@ -137,11 +146,11 @@ void MainWindow::undo()
     moveCount  = 0;
     if(m_algorithm->currentPlayer() == ChessAlgorithm::Player1)
     {
-        p1n -= 100;
+        p1n -= 5;
     }
     else if(m_algorithm->currentPlayer() == ChessAlgorithm::Player2)
     {
-        p2n -= 100;
+        p2n -= 5;
     }
     updatePoints();
     updateUndo();
@@ -178,17 +187,102 @@ void MainWindow::Check(char ch)
 {
     if(ch == 'b')
     {
-        p1p += 100;
+        p1p += 10;
     }
     if(ch == 'w')
     {
-        p2p += 100;
+        p2p += 10;
     }
     updatePoints();
 }
 
-void MainWindow::highlightPosible(int col, int rank)
+void MainWindow::elimPice(char pice)
 {
+    switch (pice) {
+    case 'p':
+        p1p +=2;
+        break;
+    case 'r':
+        p1p +=8;
+        break;
+    case 'n':
+        p1p +=8;
+        break;
+    case 'b':
+        p1p +=8;
+        break;
+    case 'q':
+        p1p +=15;
+        break;
+    case 'P':
+        p2p +=2;
+        break;
+    case 'R':
+        p2p +=8;
+        break;
+    case 'N':
+        p2p +=8;
+        break;
+    case 'B':
+        p2p +=8;
+        break;
+    case 'Q':
+        p2p +=15;
+        break;
+    case ' ':
+        break;
+
+    }
+    //    updatePoints();
+}
+
+void MainWindow::thread(char pice)
+{
+    switch (pice) {
+    case 'p':
+        p1p +=1;
+        break;
+    case 'r':
+        p1p +=2;
+        break;
+    case 'n':
+        p1p +=2;
+        break;
+    case 'b':
+        p1p +=2;
+        break;
+    case 'q':
+        p1p +=5;
+        break;
+    case 'P':
+        p2p +=1;
+        break;
+    case 'R':
+        p2p +=2;
+        break;
+    case 'N':
+        p2p +=2;
+        break;
+    case 'B':
+        p2p +=2;
+        break;
+    case 'Q':
+        p2p +=5;
+        break;
+    case ' ':
+        break;
+
+    }
+}
+
+void MainWindow::checkmatePoint(char color)
+{
+    color == 'w'? p1p += 50:p2p += 50;
+}
+
+void MainWindow::posible(int col, int rank,bool thread)
+{
+    int p1p = this->p1p,p1n= this->p1n,p2p= this->p2p,p2n= this->p2n;
 
     char color;
     isupper(m_algorithm->board()->data(col,rank))?color = 'w':color = 'b';
@@ -202,12 +296,11 @@ void MainWindow::highlightPosible(int col, int rank)
                 {
                     ChessBoard * temp = new ChessBoard(m_algorithm->board());
                     temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w')||(m_back->checkCheck(temp) != 'b' && color == 'b'))
+                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd'))
                     {
                         ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
                                     i, j, QColor(255, 0, 0, 50));
                         m_selectedFields.push_back(temp);
-                        ui->widget->addHighlight(temp);
                     }
                     delete temp;
                 }
@@ -217,11 +310,10 @@ void MainWindow::highlightPosible(int col, int rank)
                 {
                     ChessBoard * temp = new ChessBoard(m_algorithm->board());
                     temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w')||(m_back->checkCheck(temp) != 'b' && color == 'b')){
+                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
                         ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
                                     i, j, QColor(255, 0, 0, 50));
                         m_selectedFields.push_back(temp);
-                        ui->widget->addHighlight(temp);
                     }
                 }
                 break;
@@ -230,11 +322,10 @@ void MainWindow::highlightPosible(int col, int rank)
                 {
                     ChessBoard * temp = new ChessBoard(m_algorithm->board());
                     temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w')||(m_back->checkCheck(temp) != 'b' && color == 'b')){
+                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
                         ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
                                     i, j, QColor(255, 0, 0, 50));
                         m_selectedFields.push_back(temp);
-                        ui->widget->addHighlight(temp);
                     }
                 }
                 break;
@@ -243,13 +334,12 @@ void MainWindow::highlightPosible(int col, int rank)
                 {
                     ChessBoard * temp = new ChessBoard(m_algorithm->board());
                     temp->movePiece(col,rank,i,j);
-                    char temp1 = m_back->checkCheck(temp),temp2 = color == 'w';
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w')||(m_back->checkCheck(temp) != 'b' && color == 'b'))
+//                    char temp1 = m_back->checkCheck(temp),temp2 = color == 'w';
+                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd'))
                     {
                         ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
                                     i, j, QColor(255, 0, 0, 50));
                         m_selectedFields.push_back(temp);
-                        ui->widget->addHighlight(temp);
                     }
                 }
                 break;
@@ -258,11 +348,10 @@ void MainWindow::highlightPosible(int col, int rank)
                 {
                     ChessBoard * temp = new ChessBoard(m_algorithm->board());
                     temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w')||(m_back->checkCheck(temp) != 'b' && color == 'b')){
+                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
                         ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
                                     i, j, QColor(255, 0, 0, 50));
                         m_selectedFields.push_back(temp);
-                        ui->widget->addHighlight(temp);
                     }
                 }
                 break;
@@ -271,11 +360,10 @@ void MainWindow::highlightPosible(int col, int rank)
                 {
                     ChessBoard * temp = new ChessBoard(m_algorithm->board());
                     temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w')||(m_back->checkCheck(temp) != 'b' && color == 'b')){
+                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
                         ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
                                     i, j, QColor(255, 0, 0, 50));
                         m_selectedFields.push_back(temp);
-                        ui->widget->addHighlight(temp);
                     }
                 }
                 break;
@@ -284,11 +372,37 @@ void MainWindow::highlightPosible(int col, int rank)
 
         }
     }
+    if(thread == false){
+        m_selectedFieldsCopy = m_selectedFields;
+        m_selectedFields.clear();
+        this->p1p = p1p;
+        this->p1n = p1n;
+        this->p2p = p2p;
+        this->p2n = p2n;
+    }
+    else {
+        for (ChessView::FieldHighlight *temp : qAsConst(m_selectedFields)) {
+            if(m_algorithm->board()->data(temp->column(),temp->rank())!=' ')
+            {
+                this->thread(m_algorithm->board()->data(temp->column(),temp->rank()));
+            }
+//            ui->widget->addHighlight(temp);
+        }
+        m_selectedFields.clear();
+    }
+}
+
+void MainWindow::highlight(int col,int rank)
+{
+    posible(col,rank,false);
+    for (ChessView::FieldHighlight *temp : qAsConst(m_selectedFieldsCopy)) {
+        ui->widget->addHighlight(temp);
+    }
 }
 
 void MainWindow::removeHighlight()
 {
-    for (ChessView::FieldHighlight *temp : m_selectedFields) {
+    for (ChessView::FieldHighlight *temp : qAsConst(m_selectedFieldsCopy)) {
         ui->widget->removeHighlight(temp);
         delete temp;
     }

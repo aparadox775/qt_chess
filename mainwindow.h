@@ -28,6 +28,9 @@ private slots:
     void updateUndo();
     void updatePoints();
     void Check(char ch);
+    void elimPice(char pice);
+    void thread(char pice);
+    void checkmatePoint(char);
 private:
     Ui::MainWindow *ui;
     ChessView *m_undoView;
@@ -36,8 +39,10 @@ private:
     QPoint m_clickPoint;
     ChessView::FieldHighlight *m_selectedField;
     QVector <ChessView::FieldHighlight *> m_selectedFields;
+    QVector <ChessView::FieldHighlight *> m_selectedFieldsCopy;
     int moveCount = 0;
-    void highlightPosible(int col,int rank);
+    void posible(int col,int rank,bool thread);
+    void highlight(int col,int rank);
     void removeHighlight();
     int p1p = 0,p1n = 0,p2p = 0,p2n = 0;
 
