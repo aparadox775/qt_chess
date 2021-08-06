@@ -277,7 +277,11 @@ void MainWindow::thread(char pice)
 
 void MainWindow::checkmatePoint(char color)
 {
+<<<<<<< HEAD
     color == 'w'? p1p += 40:p2p += 40;
+=======
+    color == 'w'? p1p += 50:p2p += 50;
+>>>>>>> 4d05466432132be92905308250336509a6d25380
 }
 
 void MainWindow::posible(int col, int rank,bool thread)
