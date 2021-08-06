@@ -277,7 +277,7 @@ void MainWindow::thread(char pice)
 
 void MainWindow::checkmatePoint(char color)
 {
-    color == 'w'? p1p += 50:p2p += 50;
+    color == 'w'? p1p += 40:p2p += 40;
 }
 
 void MainWindow::posible(int col, int rank,bool thread)
