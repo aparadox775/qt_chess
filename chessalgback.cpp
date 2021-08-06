@@ -42,12 +42,20 @@ bool ChessAlGBack::moveKnight(int colFrom, int rankFrom, int colTo, int rankTo, 
     {
         if (crT.col == tempCor->col && crT.rank == tempCor->rank)
         {
-            if(boardView->data(colTo,rankTo) == ' ')
+            delete tempCor;
+            if(boardView->data(colTo,rankTo) == ' '){
                 return true;
-            else if(isupper(boardView->data(colTo,rankTo)) && color == 'b')
+            }
+            else if(isupper(boardView->data(colTo,rankTo)) && color == 'b'){
+                emit elimPice(boardView->data(colTo,rankTo));
                 return true;
-            else if(isupper(boardView->data(colTo,rankTo)) == 0 && color == 'w')
+            }
+            else if(isupper(boardView->data(colTo,rankTo)) == 0 && color == 'w'){
+                emit elimPice(boardView->data(colTo,rankTo));
+
                 return true;
+
+            }
         }
     }
 
@@ -55,7 +63,7 @@ bool ChessAlGBack::moveKnight(int colFrom, int rankFrom, int colTo, int rankTo, 
 //        return false;
 
 
-    delete tempCor;
+//    delete tempCor;
     return false;
 
 }
@@ -69,6 +77,10 @@ bool ChessAlGBack::moveRokh(int colFrom, int rankFrom, int colTo, int rankTo, Ch
     {
         if (crT.col == colTo && crT.rank == rankTo)
         {
+            if (boardView->data(colTo,rankTo)!=' ') {
+                emit elimPice(boardView->data(colTo,rankTo));
+
+            }
             return true;
 
         }
@@ -87,6 +99,10 @@ bool ChessAlGBack::moveBishop(int colFrom, int rankFrom, int colTo, int rankTo, 
     {
         if (crT.col == colTo && crT.rank == rankTo)
         {
+            if (boardView->data(colTo,rankTo)!=' ') {
+                emit elimPice(boardView->data(colTo,rankTo));
+
+            }
             return true;
 
         }
@@ -112,11 +128,12 @@ bool ChessAlGBack::moveKing(int colFrom, int rankFrom, int colTo, int rankTo, Ch
             }
             else if(isupper(boardView->data(colTo,rankTo)) && color == 'b')
             {
-
+                emit elimPice(boardView->data(colTo,rankTo));
                 return true;
             }
             else if(isupper(boardView->data(colTo,rankTo)) == 0 && color == 'w')
             {
+                emit elimPice(boardView->data(colTo,rankTo));
                 return true;
             }
         }
@@ -142,6 +159,10 @@ bool ChessAlGBack::movepawn(int colFrom, int rankFrom, int colTo, int rankTo, Ch
             {
                 if(boardView->data(colTo,rankTo) == ' '&& boardView->data(colTo,rankTo - 1) == ' ' )
                 {
+                    if(rankTo == 8)
+                    {
+                        emit changePawn('w');
+                    }
                     return true;
 
                 }
@@ -149,16 +170,29 @@ bool ChessAlGBack::movepawn(int colFrom, int rankFrom, int colTo, int rankTo, Ch
 //        boardView->data()
         bool cond1 = false;
         bool cond2 = false;
-        bool cond3 = false;
         coordinate temp(colFrom - 1 , rankFrom + 1);
         if(temp.boundryCheck())
             cond1 = (boardView->data(colFrom - 1,rankFrom + 1)!= ' '&&isupper(boardView->data(colFrom - 1,rankFrom + 1)) == 0);
         temp.set(colFrom + 1,rankFrom + 1);
         if(temp.boundryCheck())
             cond2 = (boardView->data(colFrom + 1,rankFrom + 1)!= ' '&&isupper(boardView->data(colFrom + 1,rankFrom + 1)) == 0);
-        cond3 = (rankTo == rankFrom + 1 && (colTo == colFrom - 1||colTo == colFrom + 1));
-        if((cond1||cond2)&&cond3)
+//        cond3 = (rankTo == rankFrom + 1 && (colTo == colFrom - 1||colTo == colFrom + 1));
+        if(cond1&&(rankTo == rankFrom + 1 && colTo == colFrom -1))
         {
+            if(rankTo == 8)
+            {
+                emit changePawn('w');
+            }
+            emit elimPice(boardView->data(colTo,rankTo));
+            return true;
+
+        }
+        else if(cond2&&(rankTo == rankFrom + 1 && colTo == colFrom + 1)){
+            if(rankTo == 8)
+            {
+                emit changePawn('w');
+            }
+            emit elimPice(boardView->data(colTo,rankTo));
             return true;
 
         }
@@ -174,6 +208,11 @@ bool ChessAlGBack::movepawn(int colFrom, int rankFrom, int colTo, int rankTo, Ch
         {
             if(boardView->data(colTo,rankTo) == ' ')
             {
+                if(rankTo == 1)
+                {
+                    emit changePawn('w');
+                }
+
                 return true;
 
             }
@@ -197,9 +236,21 @@ bool ChessAlGBack::movepawn(int colFrom, int rankFrom, int colTo, int rankTo, Ch
         if(temp.boundryCheck())
             cond2 = (boardView->data(colFrom + 1,rankFrom - 1)!= ' '&&isupper(boardView->data(colFrom + 1,rankFrom - 1)));
         cond3 = (rankTo == rankFrom - 1 && (colTo == colFrom - 1||colTo == colFrom + 1));
-        if((cond1||cond2)&&cond3)
+        if(cond1&&(rankTo == rankFrom - 1 && colTo == colFrom -1))
         {
-            std::cout << "st";
+            if(rankTo == 1)
+            {
+                emit changePawn('w');
+            }
+            return true;
+
+        }
+        if(cond2&&(rankTo == rankFrom - 1 && colTo == colFrom + 1))
+        {
+            if(rankTo == 1)
+            {
+                emit changePawn('w');
+            }
             return true;
 
         }
@@ -295,96 +346,98 @@ char ChessAlGBack::checkCheck(ChessBoard *boardView)
             }
         }
     }
-//    if(b&&w)
-//        return 'n';
+    if(b&&w)
+        return 'd';
     /*else*/ if(b)
         return 'b';
     else if(w)
         return 'w';
-//    else
-//        return 'n';
+    else
+        return 'n';
 
 }
 
-//bool ChessAlGBack::checkCheckW(ChessBoard *boardView)
-//{
-//    coordinate *kingP = nullptr;
-//    for (int i = 1; i<=8 ;i++ ) {
-//        for (int j = 1;j<=8 ; j++){
-//            if(boardView->data(i,j)=='K')
-//            {
-//                if(kingP != nullptr)
-//                    break;
-//                kingP = new coordinate(i,j);
-//                break;
-//            }
-//        }
-//    }
-//    for (int x = 1;x<=8 ;x++ ) {
-//        for (int y = 1;y<=8 ;y++ ) {
-//            if(islower( boardView->data(x,y)))
-//            {
-//                char piceType = tolower(boardView->data(x,y));
-//                switch (piceType) {
-//                case 'p':
-//                    if(movepawn(i,j,x,y,boardView))
-//                    {
-//                        if(boardView->data(x,y) == 'K')
-//                            w = true;
-//                        if(boardView->data(x,y) == 'k')
-//                            b = true;
-//                    }
-//                    break;
-//                case 'r':
-//                    if(moveRokh(i,j,x,y,boardView))
-//                    {
-//                        if(boardView->data(x,y) == 'K')
-//                            w = true;
-//                        if(boardView->data(x,y) == 'k')
-//                            b = true;
-//                    }
-//                    break;
-//                case 'n':
-//                    if(moveKnight(i,j,x,y,boardView))
-//                    {
-//                        if(boardView->data(x,y) == 'K')
-//                            w = true;
-//                        if(boardView->data(x,y) == 'k')
-//                            b = true;
-//                    }
-//                    break;
-//                case 'b':
-//                    if(moveBishop(i,j,x,y,boardView))
-//                    {
-//                        if(boardView->data(x,y) == 'K')
-//                            w = true;
-//                        if(boardView->data(x,y) == 'k')
-//                            b = true;
-//                    }
-//                    break;
-//                case'k':
-//                    if(moveKing(i,j,x,y,boardView))
-//                    {
-//                        if(boardView->data(x,y) == 'K')
-//                            w = true;
-//                        if(boardView->data(x,y) == 'k')
-//                            b = true;
-//                    }
-//                    break;
-//                case'q':
-//                    if(moveQueen(i,j,x,y,boardView))
-//                    {
-//                        if(boardView->data(x,y) == 'K')
-//                            w = true;
-//                        if(boardView->data(x,y) == 'k')
-//                            b = true;
-//                    }
-//                    break;
+bool ChessAlGBack::checkCheckW(ChessBoard *boardView)
+{
+    coordinate *kingP = nullptr;
+    for (int i = 1; i<=8 ;i++ ) {
+        for (int j = 1;j<=8 ; j++){
+            if(boardView->data(i,j)=='K')
+            {
+                if(kingP != nullptr)
+                    break;
+                kingP = new coordinate(i,j);
+                break;
+            }
+        }
+    }
+    for (int x = 1;x<=8 ;x++ )
+    {
+        for (int y = 1;y<=8 ;y++ )
+        {
+            if(islower(boardView->data(x,y)))
+            {
+                for (int i = 1; i<=8 ;i++ )
+                {
+                    for (int j = 1;j <=8 ;j++ ) {
 
-//                }
-//            }
+                        char piceType = tolower(boardView->data(x,y));
+                        switch (piceType) {
+                        case 'p':
+                            if(movepawn(i,j,x,y,boardView))
+                            {
+                                if(boardView->data(x,y) == 'K')
+                                    return true;
 
-//}
+                            }
+                            break;
+                        case 'r':
+                            if(moveRokh(i,j,x,y,boardView))
+                            {
+                                if(boardView->data(x,y) == 'K')
+                                    return  true;
+                            }
+                            break;
+                        case 'n':
+                            if(moveKnight(i,j,x,y,boardView))
+                            {
+                                if(boardView->data(x,y) == 'K')
+                                    return true;
+                            }
+                            break;
+                        case 'b':
+                            if(moveBishop(i,j,x,y,boardView))
+                            {
+                                if(boardView->data(x,y) == 'K')
+                                    return true;
+
+                            }
+                            break;
+                        case'k':
+                            if(moveKing(i,j,x,y,boardView))
+                            {
+                                if(boardView->data(x,y) == 'K')
+                                    return true;
+                            }
+                            break;
+                        case'q':
+                            if(moveQueen(i,j,x,y,boardView))
+                            {
+                                if(boardView->data(x,y) == 'K')
+                                    return true;
+
+                            }
+                            break;
+
+
+                        }//switch end
+                    }//for j
+                }//for i
+            }//if Lower
+        }//for y
+    }//for x
+    return false;
+}
 
 
 
