@@ -506,6 +506,19 @@
       </layout>
      </widget>
     </item>
+    <item row="17" column="0">
+     <widget class="QPushButton" name="newGame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>&amp;New Game</string>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="2">
      <widget class="QFrame" name="verticalFrame_2">
       <property name="frameShape">
@@ -555,18 +568,28 @@
       </layout>
      </widget>
     </item>
-    <item row="2" column="2">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+    <item row="7" column="0">
+     <widget class="QPushButton" name="undoButt">
+      <property name="text">
+       <string>&amp;Undo</string>
       </property>
-      <property name="sizeHint" stdset="0">
+     </widget>
+    </item>
+    <item row="17" column="1" rowspan="2" colspan="2">
+     <widget class="eliminated" name="widget_2" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
        <size>
-        <width>20</width>
-        <height>30</height>
+        <width>0</width>
+        <height>85</height>
        </size>
       </property>
-     </spacer>
+     </widget>
     </item>
     <item row="0" column="2">
      <widget class="QLabel" name="scores">
@@ -594,19 +617,6 @@
       </property>
      </spacer>
     </item>
-    <item row="17" column="0">
-     <widget class="QPushButton" name="newGame">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>&amp;New Game</string>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="1" rowspan="16">
      <widget class="ChessView" name="widget" native="true">
       <property name="minimumSize">
@@ -630,15 +640,18 @@
       </property>
      </widget>
     </item>
-    <item row="17" column="1" rowspan="2" colspan="2">
-     <widget class="QWidget" name="widget_2" native="true"/>
-    </item>
-    <item row="7" column="0">
-     <widget class="QPushButton" name="undoButt">
-      <property name="text">
-       <string>&amp;Undo</string>
+    <item row="2" column="2">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
       </property>
-     </widget>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>30</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>
@@ -719,6 +732,12 @@
    <class>ChessView</class>
    <extends>QWidget</extends>
    <header location="global">chessview.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>eliminated</class>
+   <extends>QWidget</extends>
+   <header location="global">eliminated.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

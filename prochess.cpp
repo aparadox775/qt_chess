@@ -111,14 +111,15 @@ bool ProChess::move(int colFrom, int rankFrom, int colTo, int rankTo)
         }
     if(moveAccepted)
     {
+        repeatedMove(colFrom,rankFrom,colTo,rankTo);
         check = m_back->checkCheck(board());
 
         if(check != 'n')
         {
             emit this->check(check);
         }
-//        bool wcheckMate = false,wcheckMate false;
-//        currentPlayer() == Player1?
+
+
         if(currentPlayer() == Player1)
         {
             if(checkMate('b'))
@@ -320,6 +321,15 @@ bool ProChess::checkMate(char color)
         }
         return true;
     }
+}
+
+bool ProChess::repeatedMove(int colFrom, int rankFrom, int colTo, int rankTo)
+{
+    if (m_history->secondLastMove().from.col == colTo && m_history->secondLastMove().from.rank == rankTo && m_history->secondLastMove().to.col == colFrom && m_history->secondLastMove().to.rank == rankFrom ){
+        emit repetitive();
+        return true;
+    }
+    return false;
 }
 
 void ProChess::switchPlayer()

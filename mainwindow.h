@@ -31,12 +31,15 @@ private slots:
     void elimPice(char pice);
     void thread(char pice);
     void checkmatePoint(char);
+    void restorePice();
+    void repetitiveMove();
 private:
     Ui::MainWindow *ui;
     ChessView *m_undoView;
     ChessAlgorithm *m_algorithm;
     ChessAlGBack *m_back;
     QPoint m_clickPoint;
+    char lastElimedPice = ' ';
     ChessView::FieldHighlight *m_selectedField;
     QVector <ChessView::FieldHighlight *> m_selectedFields;
     QVector <ChessView::FieldHighlight *> m_selectedFieldsCopy;

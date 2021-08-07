@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent)
 //    m_view = new ChessView;
     m_algorithm = new ProChess(this);
     m_back = dynamic_cast<ProChess *> (m_algorithm)->back();
+//    ui->widget_2->setFieldSize(QSize(10,10));
+
 
     m_algorithm->newGame();
     ui->widget->setBoard(m_algorithm->board());
@@ -48,13 +50,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->quitMenu, &QAction::triggered, this, &MainWindow::quit);
     connect(ui->widget, &ChessView::clicked,this,&MainWindow::viewClicked);
     connect(ui->undoButt,&QPushButton::clicked,ui->widget,&ChessView::undo);
+    connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::restorePice);
     connect(ui->undoButt,&QPushButton::clicked,dynamic_cast<ProChess *>(m_algorithm),&ProChess::switchPlayer);
     connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::moveMade,this,&MainWindow::moved);
     connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::undo);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::check,this,&MainWindow::Check);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::elimPice,this,&MainWindow::elimPice);
+    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::elimPice,ui->widget_2,&eliminated::elimP);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::gameOver,this,&MainWindow::checkmatePoint);
+    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::repetitive,this,&MainWindow::repetitiveMove);
 //    connect(m_back,&ChessAlGBack::elimPice,this,&MainWindow::thread);
     this->setWindowTitle("chess");
 }
@@ -82,6 +87,12 @@ void MainWindow::initNewGame()
     }
 
     //reset scores
+    p1p = 0;
+    p1n = 0;
+    p2p = 0;
+    p2n = 0;
+
+
     ui->player1PScoresO->setText(QString::number(0));
     ui->player1NScoresO->setText(QString::number(0));
     ui->player2PScoresO->setText(QString::number(0));
@@ -89,6 +100,7 @@ void MainWindow::initNewGame()
 
     m_algorithm->newGame();
     ui->widget->setBoard(m_algorithm->board());
+    ui->widget_2->reset();
     return;
 }
 
@@ -120,6 +132,7 @@ void MainWindow::viewClicked(const QPoint &field)
     {
         if(field != m_clickPoint)
         {
+              lastElimedPice = ' ';
               m_algorithm->move(m_clickPoint, field);
 //            ui->widget->board()->movePiece(
 //            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
@@ -198,6 +211,7 @@ void MainWindow::Check(char ch)
 
 void MainWindow::elimPice(char pice)
 {
+    lastElimedPice = pice;
     switch (pice) {
     case 'p':
         p1p +=2;
@@ -278,6 +292,28 @@ void MainWindow::thread(char pice)
 void MainWindow::checkmatePoint(char color)
 {
     color == 'w'? p1p += 40:p2p += 40;
+}
+
+void MainWindow::restorePice()
+{
+    if(lastElimedPice != ' ')
+    {
+        ui->widget_2->undo();
+    }
+}
+
+void MainWindow::repetitiveMove()
+{
+    if(m_algorithm->currentPlayer() == ChessAlgorithm::Player1)
+    {
+        p1n--;
+        updatePoints();
+    }
+    if(m_algorithm->currentPlayer() == ChessAlgorithm::Player2)
+    {
+        p2n--;
+        updatePoints();
+    }
 }
 
 void MainWindow::posible(int col, int rank,bool thread)

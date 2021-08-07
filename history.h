@@ -22,6 +22,7 @@ public:
     explicit history(QObject *parent = nullptr);
     void addlog(char,coordinate,coordinate);
     log lastMove();
+    log secondLastMove();
 private:
     QVector <log> logs;
 

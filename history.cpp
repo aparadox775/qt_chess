@@ -14,6 +14,19 @@ void history::addlog(char pice, coordinate from, coordinate to)
 
 log history::lastMove()
 {
-    log temp(*logs.end());
-    return temp;
+    if(logs.size() != 0){
+        int tempi = logs.size();
+        log temp(logs.at(logs.size()-1));
+        return temp;
+    }
+
 }
+
+log history::secondLastMove()
+{
+    if(logs.size() >= 2){
+        log temp(logs.at(logs.size() - 2));
+        return temp;
+    }
+}
+

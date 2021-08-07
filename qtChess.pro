@@ -15,6 +15,7 @@ SOURCES += \
     chessview.cpp \
     configurationdialog.cpp \
     coordinate.cpp \
+    eliminated.cpp \
     foxandhounds.cpp \
     history.cpp \
     main.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     chessview.h \
     configurationdialog.h \
     coordinate.h \
+    eliminated.h \
     foxandhounds.h \
     history.h \
     mainwindow.h \
