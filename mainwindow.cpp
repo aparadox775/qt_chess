@@ -18,7 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_algorithm->newGame();
     ui->widget->setBoard(m_algorithm->board());
     ui->widget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    ui->widget->setFieldSize(QSize(60, 60));
+
+    ui->widget->setFieldSize(QSize(70, 70));
+//    emit this->geo
 
     ui->widget->setPiece('P', QIcon(":/icons/wp.png")); // pawn
     ui->widget->setPiece('K', QIcon(":/icons/wk.png")); // king
@@ -34,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->widget->setPiece('n', QIcon(":/icons/bn.png")); // knight
     ui->widget->setPiece('b', QIcon(":/icons/bb.png")); // bishop
     layout()->setSizeConstraint(QLayout::SetFixedSize);
+
 
     //for asking for name at begining
     //    initNewGame();
@@ -60,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::elimPice,ui->widget_2,&eliminated::elimP);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::gameOver,this,&MainWindow::checkmatePoint);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::repetitive,this,&MainWindow::repetitiveMove);
+    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::pawnPasedMid,this,&MainWindow::pawnPassed);
 //    connect(m_back,&ChessAlGBack::elimPice,this,&MainWindow::thread);
     this->setWindowTitle("chess");
 }
@@ -72,6 +76,10 @@ MainWindow::~MainWindow()
 void MainWindow::initNewGame()
 {
     configurationdialog dialog(this);
+//    pawnTransformD ddd(this);
+//    pawnTransformD ddd(this);
+//    ddd.
+//    ddd.black();
 
     if (dialog.exec() == QDialog::Rejected) //if user click on cancel it will do nothing
     {
@@ -287,6 +295,7 @@ void MainWindow::thread(char pice)
         break;
 
     }
+//    updatePoints();
 }
 
 void MainWindow::checkmatePoint(char color)
@@ -314,6 +323,21 @@ void MainWindow::repetitiveMove()
         p2n--;
         updatePoints();
     }
+}
+
+void MainWindow::pawnPassed(char color)
+{
+    switch (color) {
+    case 'w':
+        p1p +=1;
+        break;
+    case 'b':
+        p2p +=1;
+        break;
+
+    }
+    updatePoints();
+
 }
 
 void MainWindow::posible(int col, int rank,bool thread)
@@ -443,5 +467,19 @@ void MainWindow::removeHighlight()
         delete temp;
     }
     m_selectedFields.clear();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    int smol;
+    ui->widget->width() <= ui->widget->height()? smol = ui->widget->width() : smol = ui->widget->height();
+    QSize temp;
+//    temp.setHeight((smol-12)/8);
+//    temp.setWidth((smol-12)/8);
+    temp.scale(ui->widget->size()/8,Qt::KeepAspectRatio);
+    //    smol -= 5;
+
+//    ui->widget->setFieldSize(temp);
 }
 

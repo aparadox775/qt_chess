@@ -8,6 +8,7 @@
 #include "chessview.h"
 #include "configurationdialog.h"
 #include "chessalgback.h"
+#include "pawntransformd.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -33,6 +34,7 @@ private slots:
     void checkmatePoint(char);
     void restorePice();
     void repetitiveMove();
+    void pawnPassed(char);
 private:
     Ui::MainWindow *ui;
     ChessView *m_undoView;
@@ -48,6 +50,7 @@ private:
     void highlight(int col,int rank);
     void removeHighlight();
     int p1p = 0,p1n = 0,p2p = 0,p2n = 0;
+    void resizeEvent(QResizeEvent* event);
 
 
 };

@@ -4,6 +4,7 @@
 #include "chessalgorithm.h"
 #include "chessalgback.h"
 #include "history.h"
+#include "pawntransformd.h"
 #include <QObject>
 
 class ProChess : public ChessAlgorithm
@@ -19,11 +20,15 @@ private:
     ChessAlGBack *m_back;
     history *m_history;
     bool checkMate(char color);
+    coordinate *pawnChache;
     bool repeatedMove(int colFrom, int rankFrom, int colTo, int rankTo);
+    pawnTransformD *transform;
 //    bool foxCanMove() const;
 //    bool emptyByOffset(int x, int y) const;
 public slots:
     void switchPlayer();
+private slots:
+    void changePawn(char);
 
 signals:
     void moveMade();
@@ -31,6 +36,7 @@ signals:
     void elimPice(char);
     void gameOver(char);
     void repetitive();
+    void pawnPasedMid(char);
 };
 
 #endif // PROCHESS_H

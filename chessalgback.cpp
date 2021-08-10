@@ -821,6 +821,3 @@ history *ChessAlGBack::getHistory()
 {
     return m_history;
 }
-
-
-

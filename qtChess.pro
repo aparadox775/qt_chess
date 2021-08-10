@@ -20,6 +20,7 @@ SOURCES += \
     history.cpp \
     main.cpp \
     mainwindow.cpp \
+    pawntransformd.cpp \
     prochess.cpp
 
 HEADERS += \
@@ -33,11 +34,13 @@ HEADERS += \
     foxandhounds.h \
     history.h \
     mainwindow.h \
+    pawntransformd.h \
     prochess.h
 
 FORMS += \
     configurationdialog.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    pawntransformd.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -5,6 +5,8 @@ ProChess::ProChess(QObject *parent)
     this->setParent(parent);
     m_back = new ChessAlGBack(this);
     m_history = m_back->getHistory();
+    transform = new pawnTransformD;
+    connect(transform,&pawnTransformD::convert,this,&ProChess::changePawn);
 }
 
 void ProChess::newGame()
@@ -23,6 +25,8 @@ bool ProChess::move(int colFrom, int rankFrom, int colTo, int rankTo)
     {
         return false;
     }
+    char color;
+    isupper(board()->data(colFrom,rankFrom))?color = 'w':color = 'b';
     char toPice = board()->data(colTo,rankTo);
     bool moveAccepted = false;
     char check;
@@ -41,7 +45,98 @@ bool ProChess::move(int colFrom, int rankFrom, int colTo, int rankTo)
                 if((currentPlayer() == Player1 && m_back->checkCheck(temp) != 'w'&& m_back->checkCheck(temp) != 'd')||(currentPlayer() == Player2 && m_back->checkCheck(temp) != 'b'&& m_back->checkCheck(temp) != 'd'))
                 {
                     board()->movePiece(colFrom,rankFrom,colTo,rankTo);
+                    if (color == 'w')
+                    {
+                        if(rankTo == 8){
+
+                            transform->white();
+                            pawnChache  = new coordinate(colTo,rankTo);
+                        }
+
+                        if(rankTo == 5)
+                        {
+                            emit pawnPasedMid('w');
+                        }
+
+                    }
+                    if (color == 'b' )
+                    {
+                        if(rankTo == 1){
+                            transform->black();
+                            pawnChache  = new coordinate(colTo,rankTo);
+                        }
+
+                        if(rankTo == 4)
+                        {
+                            emit pawnPasedMid('b');
+                        }
+
+
+
+                    }
                     moveAccepted = true;
+                }
+            }
+            temp->movePiece(colFrom,rankFrom,colTo,rankTo);
+            if((currentPlayer() == Player1 && m_back->checkCheck(temp) != 'w'&& m_back->checkCheck(temp) != 'd')||(currentPlayer() == Player2 && m_back->checkCheck(temp) != 'b'&& m_back->checkCheck(temp) != 'd'))
+            {
+                if (color == 'w')
+                {
+                    if(rankFrom == 5)
+                    {
+                        if(board()->data(colFrom - 1,rankFrom) == 'p'||board()->data(colFrom + 1,rankFrom) == 'p')
+                        {
+                            if(colTo == colFrom -1 && rankTo == rankFrom +1)
+                            {
+                                if(m_history->lastMove().pice == 'p'&& m_history->lastMove().to.col == colFrom - 1&&m_history->lastMove().to.rank == rankFrom&& m_history->lastMove().from.rank == 7){
+                                    board()->movePiece(colFrom,rankFrom,colTo,rankTo);
+                                    board()->setData(colTo,rankTo - 1,' ');
+                                    emit elimPice('p');
+                                    moveAccepted = true;
+                                }
+
+                            }
+                            if(colTo == colFrom +1 && rankTo == rankFrom +1)
+                            {
+                                if(m_history->lastMove().pice == 'p'&& m_history->lastMove().to.col == colFrom +1 &&m_history->lastMove().to.rank == rankFrom&& m_history->lastMove().from.rank == 7){
+                                    board()->movePiece(colFrom,rankFrom,colTo,rankTo);
+                                    board()->setData(colTo,rankTo - 1,' ');
+                                    emit elimPice('p');
+                                    moveAccepted = true;
+                                }
+                            }
+                        }
+                    }
+
+                }
+                if (color == 'b')
+                {
+                    if(rankFrom == 4)
+                    {
+                        if(board()->data(colFrom - 1,rankFrom) == 'P'||board()->data(colFrom + 1,rankFrom) == 'P')
+                        {
+                            if(colTo == colFrom -1 && rankTo == rankFrom - 1)
+                            {
+                                if(m_history->lastMove().pice == 'P'&& m_history->lastMove().to.col == colFrom - 1&&m_history->lastMove().to.rank == rankFrom&& m_history->lastMove().from.rank == 2){
+                                    board()->movePiece(colFrom,rankFrom,colTo,rankTo);
+                                    board()->setData(colTo,rankTo + 1,' ');
+                                    emit elimPice('P');
+                                    moveAccepted = true;
+                                }
+
+                            }
+                            if(colTo == colFrom +1 && rankTo == rankFrom - 1)
+                            {
+                                if(m_history->lastMove().pice == 'P'&& m_history->lastMove().to.col == colFrom +1 &&m_history->lastMove().to.rank == rankFrom&& m_history->lastMove().from.rank == 2){
+                                    board()->movePiece(colFrom,rankFrom,colTo,rankTo);
+                                    board()->setData(colTo,rankTo + 1,' ');
+                                    emit elimPice('P');
+                                    moveAccepted = true;
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
             break;
@@ -335,4 +430,20 @@ bool ProChess::repeatedMove(int colFrom, int rankFrom, int colTo, int rankTo)
 void ProChess::switchPlayer()
 {
     setCurrentPlayer(m_back->switchPlayer(currentPlayer()));
+}
+
+void ProChess::changePawn(char to)
+{
+    if(pawnChache->rank == 8)
+    {
+        char temp = toupper(to);
+        board()->setData(pawnChache->col,pawnChache->rank,temp);
+        delete  pawnChache;
+    }
+    if(pawnChache->rank == 1)
+    {
+        board()->setData(pawnChache->col,pawnChache->rank,to);
+        delete  pawnChache;
+    }
+    transform->close();
 }
