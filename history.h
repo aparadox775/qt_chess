@@ -21,10 +21,13 @@ class history : public QObject
 public:
     explicit history(QObject *parent = nullptr);
     void addlog(char,coordinate,coordinate);
+    bool kingHasMoved(char color);
+    QVector<bool> rokhHasMoved(char color);
     log lastMove();
     log secondLastMove();
 private:
     QVector <log> logs;
+    bool rokh[4];
 
 
 signals:

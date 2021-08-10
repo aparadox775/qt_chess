@@ -173,6 +173,104 @@ bool ProChess::move(int colFrom, int rankFrom, int colTo, int rankTo)
                     moveAccepted = true;
                 }
             }
+            temp->movePiece(colFrom,rankFrom,colTo,rankTo);
+            if((currentPlayer() == Player1 && m_back->checkCheck(temp) != 'w' && m_back->checkCheck(temp) != 'd')||(currentPlayer() == Player2 && m_back->checkCheck(temp) != 'b'&& m_back->checkCheck(temp) != 'd'))
+            {
+                QVector <bool> rokhMoved;
+                switch (color) {
+
+                case 'w':
+                    if(m_history->kingHasMoved(color))
+                    {
+                        break;
+                    }
+                    rokhMoved = m_history->rokhHasMoved(color);
+                    if(!rokhMoved[0])
+                    {
+                        if(colTo == 3)
+                        {
+                            for(int i = 2;i <= 4;i++)
+                            {
+                                if(board()->data(i,1) == ' ')
+                                {
+                                    board()->movePiece(colFrom, rankFrom, colTo, rankTo);
+                                    board()->setData(1,1,' ');
+                                    board()->setData(4,1,'R');
+                                    moveAccepted = true;
+//                                    board()->movePiece(1,1,4,1);
+                                }
+
+                            }
+                        }
+                    }
+                    if(!rokhMoved[1])
+                    {
+                        if(colTo == 7)
+                        {
+                            for(int i = 6;i <= 7;i++)
+                            {
+                                if(board()->data(i,1) == ' ')
+                                {
+                                    board()->movePiece(colFrom, rankFrom, colTo, rankTo);
+                                    board()->setData(8,1,' ');
+                                    board()->setData(6,1,'R');
+                                    moveAccepted = true;
+//                                    board()->movePiece(1,1,4,1);
+                                }
+
+                            }
+                        }
+                    }
+
+                    break;
+
+                case 'b':
+                    if(m_history->kingHasMoved(color))
+                    {
+                        break;
+                    }
+                    rokhMoved = m_history->rokhHasMoved(color);
+                    if(!rokhMoved[0])
+                    {
+                        if(colTo == 3)
+                        {
+                            for(int i = 2;i <= 4;i++)
+                            {
+                                if(board()->data(i,8) == ' ')
+                                {
+                                    board()->movePiece(colFrom, rankFrom, colTo, rankTo);
+                                    board()->setData(1,8,' ');
+                                    board()->setData(4,8,'r');
+                                    moveAccepted = true;
+//                                    board()->movePiece(1,1,4,1);
+                                }
+
+                            }
+                        }
+                    }
+                    if(!rokhMoved[1])
+                    {
+                        if(colTo == 7)
+                        {
+                            for(int i = 6;i <= 7;i++)
+                            {
+                                if(board()->data(i,8) == ' ')
+                                {
+                                    board()->movePiece(colFrom, rankFrom, colTo, rankTo);
+                                    board()->setData(8,8,' ');
+                                    board()->setData(6,8,'r');
+                                    moveAccepted = true;
+//                                    board()->movePiece(1,1,4,1);
+                                }
+
+                            }
+                        }
+                    }
+
+                    break;
+
+                }
+            }
             break;
         case 'q':
 
