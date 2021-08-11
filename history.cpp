@@ -33,7 +33,7 @@ void history::addlog(char pice, coordinate from, coordinate to)
             rokh[3] = true;
         }
     }
-    log temp(pice,from,to);
+    Plog temp(pice,from,to);
     logs.push_back(temp);
 
 
@@ -43,7 +43,7 @@ bool history::kingHasMoved(char color)
 {
     switch (color) {
     case 'w':
-        for(log temp:qAsConst(logs))
+        for(Plog temp:qAsConst(logs))
         {
             if(temp.pice == 'K')
                 return true;
@@ -52,7 +52,7 @@ bool history::kingHasMoved(char color)
         return false;
         break;
     case 'b':
-        for(log temp:qAsConst(logs))
+        for(Plog temp:qAsConst(logs))
         {
             if(temp.pice == 'k')
                 return true;
@@ -81,20 +81,20 @@ QVector<bool> history::rokhHasMoved(char color)
 
 }
 
-log history::lastMove()
+Plog history::lastMove()
 {
     if(logs.size() != 0){
 //        int tempi = logs.size();
-        log temp(logs.at(logs.size()-1));
+        Plog temp(logs.at(logs.size()-1));
         return temp;
     }
 
 }
 
-log history::secondLastMove()
+Plog history::secondLastMove()
 {
     if(logs.size() >= 2){
-        log temp(logs.at(logs.size() - 2));
+        Plog temp(logs.at(logs.size() - 2));
         return temp;
     }
 }

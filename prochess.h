@@ -5,19 +5,27 @@
 #include "chessalgback.h"
 #include "history.h"
 #include "pawntransformd.h"
+#include "log.h"
 #include <QObject>
+#include <QRandomGenerator>
+#include <QDateTime>
+
 
 class ProChess : public ChessAlgorithm
 {
     Q_OBJECT
 public:
+
     explicit ProChess(QObject *parent = nullptr);
     void newGame();
     bool move(int colFrom, int rankFrom, int colTo, int rankTo);
     ChessAlGBack *back() const;
-        bool moveP(int colFrom, int rankFrom, int colTo, int rankTo);
 
-        history *historyGet() const;
+    bool moveP(int colFrom, int rankFrom, int colTo, int rankTo);
+    bool thread(int col, int rank,char color);
+    history *historyGet() const;
+    void randomMove(char color);
+
 
 private:
     ChessAlGBack *m_back;

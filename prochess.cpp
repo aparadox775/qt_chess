@@ -32,7 +32,7 @@ bool ProChess::move(int colFrom, int rankFrom, int colTo, int rankTo)
     char check;
     ChessBoard *temp = new ChessBoard(board());
     char chache = board()->data(colFrom,rankFrom);
-    char piceType = tolower(board()->data(colFrom,rankFrom));
+//    char piceType = tolower(board()->data(colFrom,rankFrom));
     if (m_back->turnCheck(chache,currentPlayer()))
     {
         //we should check the check stasus first......
@@ -359,7 +359,7 @@ bool ProChess::moveP(int colFrom, int rankFrom, int colTo, int rankTo)
         bool moveAccepted = false;
         char check;
         ChessBoard *temp = new ChessBoard(board());
-        char chache = board()->data(colFrom,rankFrom);
+//        char chache = board()->data(colFrom,rankFrom);
         char piceType = tolower(board()->data(colFrom,rankFrom));
 //        if (m_back->turnCheck(chache,currentPlayer()))
         {
@@ -470,16 +470,28 @@ bool ProChess::moveP(int colFrom, int rankFrom, int colTo, int rankTo)
                         {
                             for(int i = 2;i <= 4;i++)
                             {
-                                if(board()->data(i,1) == ' ')
-                                {
+                                if(board()->data(i,1) != ' ')
+                                {return false;}
+                            }
                                     if(colTo == 3 && rankTo == 1){
-                                        return true;
-                                        moveAccepted = true;
+                                        bool isClear = true;
+                                        for(int x = 1;x <=5;x++)
+                                        {
+                                            if(thread(x,1,'w'))
+                                            {
+                                                isClear =false;
+                                                break;
+                                            }
+                                        }
+                                        if(isClear){
+                                            return true;
+                                            moveAccepted = true;
+                                        }
                                     }
                                     //                                    board()->movePiece(1,1,4,1);
-                                }
 
-                            }
+
+
                         }
                     }
                     if(!rokhMoved[1])
@@ -488,17 +500,29 @@ bool ProChess::moveP(int colFrom, int rankFrom, int colTo, int rankTo)
                         {
                             for(int i = 6;i <= 7;i++)
                             {
-                                if(board()->data(i,1) == ' ')
-                                {
+                                if(board()->data(i,1) != ' ')
+                                {return false;}
+                                }
                                     if(rankTo == 1 && colTo == 7)
                                     {
-                                        return true;
-                                        moveAccepted = true;
+                                        bool isClear = true;
+                                        for(int x = 5;x <=8;x++)
+                                        {
+                                            if(thread(x,1,'w'))
+                                            {
+                                                isClear =false;
+                                                break;
+                                            }
+                                        }
+                                        if(isClear){
+                                            return true;
+                                            moveAccepted = true;
+                                        }
                                     }
                                     //                                    board()->movePiece(1,1,4,1);
-                                }
 
-                            }
+
+
                         }
                     }
 
@@ -516,17 +540,29 @@ bool ProChess::moveP(int colFrom, int rankFrom, int colTo, int rankTo)
                         {
                             for(int i = 2;i <= 4;i++)
                             {
-                                if(board()->data(i,8) == ' ')
-                                {
+                                if(board()->data(i,8) != ' ')
+                                {return false;}
+                            }
                                     if(colTo == 3 & rankTo == 8)
                                     {
-                                        return true;
-                                        moveAccepted = true;
+                                        bool isClear = true;
+                                        for(int x = 1;x <=5;x++)
+                                        {
+                                            if(thread(x,8,'b'))
+                                            {
+                                                isClear =false;
+                                                break;
+                                            }
+                                        }
+                                        if(isClear){
+                                            return true;
+                                            moveAccepted = true;
+                                        }
 
                                     }//                                    board()->movePiece(1,1,4,1);
-                                }
 
-                            }
+
+
                         }
                     }
                     if(!rokhMoved[1])
@@ -535,16 +571,28 @@ bool ProChess::moveP(int colFrom, int rankFrom, int colTo, int rankTo)
                         {
                             for(int i = 6;i <= 7;i++)
                             {
-                                if(board()->data(i,8) == ' ')
-                                {
+                                if(board()->data(i,8) != ' ')
+                                {return false;}
+                            }
                                     if(colTo == 7 && rankTo == 8){
-                                        return true;
-                                        moveAccepted = true;
+                                        bool isClear = true;
+                                        for(int x = 5;x <=8;x++)
+                                        {
+                                            if(thread(x,8,'b'))
+                                            {
+                                                isClear =false;
+                                                break;
+                                            }
+                                        }
+                                        if(isClear){
+                                            return true;
+                                            moveAccepted = true;
+                                        }
                                     }
                                     //                                    board()->movePiece(1,1,4,1);
-                                }
 
-                            }
+
+
                         }
                     }
 
@@ -626,9 +674,97 @@ bool ProChess::moveP(int colFrom, int rankFrom, int colTo, int rankTo)
 
 }
 
+bool ProChess::thread(int col, int rank, char color)
+{
+    for(int i = 1;i <= 8;i++)
+    {
+        for(int j = 1;j<= 8;j++)
+        {
+            if(color == 'w')
+            {
+                if(islower(board()->data(i,j)))
+                {
+                    if(moveP(i,j,col,rank))
+                    {
+                        return true;
+                    }
+
+                }
+            }
+            if(color == 'b')
+            {
+                if(isupper(board()->data(i,j)))
+                {
+                    if(moveP(i,j,col,rank))
+                    {
+                        return true;
+                    }
+
+                }
+            }
+        }
+    }
+    return false;
+
+}
+
 history *ProChess::historyGet() const
 {
     return m_history;
+}
+
+void ProChess::randomMove(char color)
+{
+
+    QVector <Plog> pices;
+    QVector <coordinate> toRand;
+    for (int i = 1;i <= 8 ;i++ ) {
+        for(int j = 1; j <= 8;j++)
+        {
+            if(color == 'w')
+            {
+                if(isupper(board()->data(i,j)))
+                {
+                    pices.push_back(Plog(board()->data(i,j),coordinate(i,j),coordinate(i,j)));
+                }
+            }
+            if(color == 'b')
+            {
+                if(islower(board()->data(i,j)))
+                {
+                    pices.push_back(Plog(board()->data(i,j),coordinate(i,j),coordinate(i,j)));
+                }
+            }
+        }
+
+    }
+    int pNumber = pices.size();
+//    qsrand(QDateTime::currentMSecsSinceEpoch() / 1000);
+    QRandomGenerator rand;
+    rand.seed(QDateTime::currentMSecsSinceEpoch());
+    int index =rand.global()->generate()%pNumber;
+    for(int i = 1; i<=8;i++)
+    {
+        for(int j = 1;j <= 8 ;j++)
+        {
+            if(moveP(pices[index].from.col,pices[index].from.rank,i,j))
+            {
+                toRand.push_back(coordinate(i,j));
+            }
+        }
+    }
+    int moveCount = toRand.size();
+    rand.seed(QDateTime::currentMSecsSinceEpoch());
+    int coordinateIndex;
+    if(moveCount != 0){
+        coordinateIndex=rand.global()->generate()%moveCount;
+
+        move(pices[index].from.col,pices[index].from.rank,toRand[coordinateIndex].col,toRand[coordinateIndex].rank);
+    }
+
+
+//    QRandomGenerator
+
 }
 
 void ProChess::switchPlayer()

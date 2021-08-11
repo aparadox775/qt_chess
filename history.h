@@ -4,16 +4,17 @@
 #include <QObject>
 //#include "chessalgback.h"
 #include "coordinate.h"
-struct log
-{
-    coordinate from;
-    coordinate to;
-    char pice;
-    log(char pice,coordinate fromC,coordinate toC):from(fromC),to(toC)
-    {
-        this->pice = pice;
-    }
-};
+#include "log.h"
+//struct log
+//{
+//    coordinate from;
+//    coordinate to;
+//    char pice;
+//    log(char pice,coordinate fromC,coordinate toC):from(fromC),to(toC)
+//    {
+//        this->pice = pice;
+//    }
+//};
 
 class history : public QObject
 {
@@ -23,12 +24,12 @@ public:
     void addlog(char,coordinate,coordinate);
     bool kingHasMoved(char color);
     QVector<bool> rokhHasMoved(char color);
-    log lastMove();
-    log secondLastMove();
+    Plog lastMove();
+    Plog secondLastMove();
 public slots:
     void popBack();
 private:
-    QVector <log> logs;
+    QVector <Plog> logs;
     bool rokh[4];
 
 

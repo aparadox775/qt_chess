@@ -657,6 +657,13 @@
       </property>
      </spacer>
     </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="extraTurn">
+      <property name="text">
+       <string>&amp;Extra Turn</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">

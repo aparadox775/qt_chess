@@ -39,8 +39,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //for asking for name at begining
-    //    initNewGame();
+        initNewGame();
     ui->undoButt->setDisabled(true);
+    ui->extraTurn->setDisabled(true);
 
     //seting width fo push buttons
     ui->quit->setFixedWidth(ui->newGame->width());
@@ -56,15 +57,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::restorePice);
     connect(ui->undoButt,&QPushButton::clicked,dynamic_cast<ProChess *>(m_algorithm),&ProChess::switchPlayer);
     connect(ui->undoButt,&QPushButton::clicked,m_history,&history::popBack);
-    connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
-    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::moveMade,this,&MainWindow::moved);
     connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::undo);
+    connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
+    connect(ui->actionundo,&QAction::triggered,this,&MainWindow::restorePice);
+    connect(ui->actionundo,&QAction::triggered,dynamic_cast<ProChess *>(m_algorithm),&ProChess::switchPlayer);
+    connect(ui->actionundo,&QAction::triggered,m_history,&history::popBack);
+    connect(ui->actionundo,&QAction::triggered,this,&MainWindow::undo);
+    connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::moveMade,this,&MainWindow::moved);
+
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::check,this,&MainWindow::Check);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::elimPice,this,&MainWindow::elimPice);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::elimPice,ui->widget_2,&eliminated::elimP);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::gameOver,this,&MainWindow::checkmatePoint);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::repetitive,this,&MainWindow::repetitiveMove);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::pawnPasedMid,this,&MainWindow::pawnPassed);
+    connect(ui->extraTurn,&QPushButton::clicked,this,&MainWindow::extraTurn);
 //    connect(m_back,&ChessAlGBack::elimPice,this,&MainWindow::thread);
     this->setWindowTitle("chess");
 }
@@ -76,11 +83,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::initNewGame()
 {
+//    removeHighlight();
     configurationdialog dialog(this);
-//    pawnTransformD ddd(this);
-//    pawnTransformD ddd(this);
-//    ddd.
-//    ddd.black();
+
 
     if (dialog.exec() == QDialog::Rejected) //if user click on cancel it will do nothing
     {
@@ -93,6 +98,8 @@ void MainWindow::initNewGame()
         ui->player1NScores->setText(dialog.player1Name() + "\'s negative :");
         ui->player2PScores->setText(dialog.player2Name() + "\'s scores :");
         ui->player2NScores->setText(dialog.player2Name() + "\'s negative :");
+        player1 = dialog.player1Name();
+        player2 = dialog.player2Name();
     }
 
     //reset scores
@@ -100,6 +107,11 @@ void MainWindow::initNewGame()
     p1n = 0;
     p2p = 0;
     p2n = 0;
+
+    extra = 1;
+    moveCount = 0;
+    updateExtra();
+    updateUndo();
 
 
     ui->player1PScoresO->setText(QString::number(0));
@@ -157,7 +169,7 @@ void MainWindow::viewClicked(const QPoint &field)
               updatePoints();
         };
         m_clickPoint = QPoint();
-        ui->widget->removeHighlight(m_selectedField);
+
 
         removeHighlight();
         delete m_selectedField;
@@ -174,6 +186,8 @@ void MainWindow::undo()
 {
 //    ui->widget = m_undoView;
     moveCount  = 0;
+    extra -=1;
+    updateExtra();
     if(m_algorithm->currentPlayer() == ChessAlgorithm::Player1)
     {
         p1n -= 5;
@@ -190,6 +204,8 @@ void MainWindow::undo()
 void MainWindow::moved()
 {
     moveCount ++;
+    extra ++;
+    updateExtra();
 }
 
 void MainWindow::updateUndo()
@@ -207,6 +223,17 @@ void MainWindow::updateUndo()
 
 void MainWindow::updatePoints()
 {
+    if(p1n <= -15)
+    {
+        dynamic_cast<ProChess *>(m_algorithm)->randomMove('w');
+        p1n +=15;
+
+    }
+    if(p2n <= -15)
+    {
+        dynamic_cast<ProChess *>(m_algorithm)->randomMove('b');
+        p2n +=15;
+    }
     ui->player1NScoresO->setText(QString::number(p1n));
     ui->player1PScoresO->setText(QString::number(p1p));
     ui->player2NScoresO->setText(QString::number(p2n));
@@ -310,6 +337,23 @@ void MainWindow::threadPoint(char pice)
 void MainWindow::checkmatePoint(char color)
 {
     color == 'w'? p1p += 40:p2p += 40;
+    char winer;
+    p1p < p2p?winer = 'b':winer = 'w';
+    winerDialoge *final = new winerDialoge(this);
+    if(winer == 'w'){
+        final->setWiner(player1);
+//        final.show();
+    }
+    else if(winer == 'b')
+    {
+        final->setWiner(player2);
+//        final.show();
+
+    }
+    else{
+        final->setWiner("draw");
+    }
+
 }
 
 void MainWindow::restorePice()
@@ -346,6 +390,39 @@ void MainWindow::pawnPassed(char color)
 
     }
     updatePoints();
+
+}
+
+void MainWindow::extraTurn()
+{
+    if(extra >= 2){
+
+        dynamic_cast<ProChess *>(m_algorithm)->switchPlayer();
+        if(m_algorithm->currentPlayer() == ChessAlgorithm::Player1)
+        {
+            p1p -=50;
+        }
+        if(m_algorithm->currentPlayer() == ChessAlgorithm::Player2)
+        {
+            p2p -=50;
+        }
+        updatePoints();
+        extra = 0;
+    }
+    updateExtra();
+
+}
+
+void MainWindow::updateExtra()
+{
+    if(extra < 2)
+    {
+        ui->extraTurn->setDisabled(true);
+    }
+    else
+    {
+        ui->extraTurn->setEnabled(true);
+    }
 
 }
 
@@ -387,6 +464,7 @@ void MainWindow::highlight(int col,int rank)
 
 void MainWindow::removeHighlight()
 {
+            ui->widget->removeHighlight(m_selectedField);
     for (ChessView::FieldHighlight *temp : qAsConst(m_selectedFieldsCopy)) {
         ui->widget->removeHighlight(temp);
         delete temp;

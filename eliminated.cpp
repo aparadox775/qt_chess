@@ -42,7 +42,9 @@ void eliminated::paintEvent(QPaintEvent *)
 void eliminated::drawField(QPainter *painter, int column, int rank)
 {
      QRect rect = fieldRect(column, rank);
+//     rect.
      QColor fillColor = (column + rank) % 2 ? palette().color(QPalette::Background) : palette().color(QPalette::Background);
+
      painter->setPen(palette().color(QPalette::Dark));
      painter->setBrush(fillColor);
      painter->drawRect(rect);

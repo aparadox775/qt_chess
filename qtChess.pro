@@ -18,10 +18,12 @@ SOURCES += \
     eliminated.cpp \
     foxandhounds.cpp \
     history.cpp \
+    log.cpp \
     main.cpp \
     mainwindow.cpp \
     pawntransformd.cpp \
-    prochess.cpp
+    prochess.cpp \
+    winerdialoge.cpp
 
 HEADERS += \
     chessalgback.h \
@@ -33,14 +35,17 @@ HEADERS += \
     eliminated.h \
     foxandhounds.h \
     history.h \
+    log.h \
     mainwindow.h \
     pawntransformd.h \
-    prochess.h
+    prochess.h \
+    winerdialoge.h
 
 FORMS += \
     configurationdialog.ui \
     mainwindow.ui \
-    pawntransformd.ui
+    pawntransformd.ui \
+    winerdialoge.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
