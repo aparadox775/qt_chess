@@ -25,6 +25,8 @@ public:
     QVector<bool> rokhHasMoved(char color);
     log lastMove();
     log secondLastMove();
+public slots:
+    void popBack();
 private:
     QVector <log> logs;
     bool rokh[4];

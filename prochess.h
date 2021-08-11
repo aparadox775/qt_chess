@@ -15,6 +15,9 @@ public:
     void newGame();
     bool move(int colFrom, int rankFrom, int colTo, int rankTo);
     ChessAlGBack *back() const;
+        bool moveP(int colFrom, int rankFrom, int colTo, int rankTo);
+
+        history *historyGet() const;
 
 private:
     ChessAlGBack *m_back;
@@ -23,6 +26,7 @@ private:
     coordinate *pawnChache;
     bool repeatedMove(int colFrom, int rankFrom, int colTo, int rankTo);
     pawnTransformD *transform;
+
 //    bool foxCanMove() const;
 //    bool emptyByOffset(int x, int y) const;
 public slots:

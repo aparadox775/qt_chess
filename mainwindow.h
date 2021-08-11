@@ -9,6 +9,7 @@
 #include "configurationdialog.h"
 #include "chessalgback.h"
 #include "pawntransformd.h"
+#include "history.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -30,7 +31,7 @@ private slots:
     void updatePoints();
     void Check(char ch);
     void elimPice(char pice);
-    void thread(char pice);
+    void threadPoint(char pice);
     void checkmatePoint(char);
     void restorePice();
     void repetitiveMove();
@@ -40,17 +41,19 @@ private:
     ChessView *m_undoView;
     ChessAlgorithm *m_algorithm;
     ChessAlGBack *m_back;
+    history *m_history;
     QPoint m_clickPoint;
     char lastElimedPice = ' ';
     ChessView::FieldHighlight *m_selectedField;
     QVector <ChessView::FieldHighlight *> m_selectedFields;
     QVector <ChessView::FieldHighlight *> m_selectedFieldsCopy;
     int moveCount = 0;
-    void posible(int col,int rank,bool thread);
+    void posible(int col,int rank);
     void highlight(int col,int rank);
     void removeHighlight();
     int p1p = 0,p1n = 0,p2p = 0,p2n = 0;
     void resizeEvent(QResizeEvent* event);
+    void thread(int col,int rank);
 
 
 };

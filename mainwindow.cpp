@@ -9,10 +9,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     m_selectedField = nullptr;
-//    m_view = new ChessView;
+
+
     m_algorithm = new ProChess(this);
     m_back = dynamic_cast<ProChess *> (m_algorithm)->back();
-//    ui->widget_2->setFieldSize(QSize(10,10));
+    m_history = dynamic_cast<ProChess *> (m_algorithm)->historyGet();
 
 
     m_algorithm->newGame();
@@ -20,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->widget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
     ui->widget->setFieldSize(QSize(70, 70));
-//    emit this->geo
 
     ui->widget->setPiece('P', QIcon(":/icons/wp.png")); // pawn
     ui->widget->setPiece('K', QIcon(":/icons/wk.png")); // king
@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->undoButt,&QPushButton::clicked,ui->widget,&ChessView::undo);
     connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::restorePice);
     connect(ui->undoButt,&QPushButton::clicked,dynamic_cast<ProChess *>(m_algorithm),&ProChess::switchPlayer);
+    connect(ui->undoButt,&QPushButton::clicked,m_history,&history::popBack);
     connect(ui->actionundo,&QAction::triggered,ui->widget,&ChessView::undo);
     connect(dynamic_cast<ProChess *>(m_algorithm),&ProChess::moveMade,this,&MainWindow::moved);
     connect(ui->undoButt,&QPushButton::clicked,this,&MainWindow::undo);
@@ -134,22 +135,30 @@ void MainWindow::viewClicked(const QPoint &field)
             ui->widget->addHighlight(m_selectedField);
 //
             highlight(field.x(),field.y());
+            m_clickPoint.setX(field.x());
+            m_clickPoint.setY(field.y());
 
         }
     } else
     {
         if(field != m_clickPoint)
         {
+            bool tr = false;
+            if(dynamic_cast<ProChess *>(m_algorithm)->moveP(m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()))
+                tr = true;
               lastElimedPice = ' ';
               m_algorithm->move(m_clickPoint, field);
 //            ui->widget->board()->movePiece(
 //            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
 //            );
-              posible(field.x(),field.y(),true);
+//              posible(field.x(),field.y(),true);
+                if(tr)
+              thread(field.x(),field.y());
               updatePoints();
         };
         m_clickPoint = QPoint();
         ui->widget->removeHighlight(m_selectedField);
+
         removeHighlight();
         delete m_selectedField;
         m_selectedField = nullptr;
@@ -258,7 +267,7 @@ void MainWindow::elimPice(char pice)
     //    updatePoints();
 }
 
-void MainWindow::thread(char pice)
+void MainWindow::threadPoint(char pice)
 {
     switch (pice) {
     case 'p':
@@ -340,121 +349,37 @@ void MainWindow::pawnPassed(char color)
 
 }
 
-void MainWindow::posible(int col, int rank,bool thread)
+void MainWindow::posible(int col, int rank)
 {
     int p1p = this->p1p,p1n= this->p1n,p2p= this->p2p,p2n= this->p2n;
 
-    char color;
-    isupper(m_algorithm->board()->data(col,rank))?color = 'w':color = 'b';
+//    char color;s
+//    isupper(m_algorithm->board()->data(col,rank))?color = 'w':color = 'b';
     for (int i = 1; i <=8 ; i++) {
         for (int j = 1; j <=8 ; j++) {
+            if(dynamic_cast<ProChess *>(m_algorithm)->moveP(col,rank,i,j))
+            {
 
-            char piceType = tolower(ui->widget->board()->data(col,rank));
-            switch (piceType) {
-            case 'p':
-                if(dynamic_cast <ProChess *> (m_algorithm) ->back()->movepawn(col,rank,i,j,ui->widget->board()))
-                {
-                    ChessBoard * temp = new ChessBoard(m_algorithm->board());
-                    temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd'))
-                    {
-                        ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
-                                    i, j, QColor(255, 0, 0, 50));
-                        m_selectedFields.push_back(temp);
-                    }
-                    delete temp;
-                }
-            break;
-            case 'r':
-                if(dynamic_cast <ProChess *> (m_algorithm) ->back()->moveRokh(col,rank,i,j,ui->widget->board()))
-                {
-                    ChessBoard * temp = new ChessBoard(m_algorithm->board());
-                    temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
-                        ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
-                                    i, j, QColor(255, 0, 0, 50));
-                        m_selectedFields.push_back(temp);
-                    }
-                }
-                break;
-            case 'n':
-                if(dynamic_cast <ProChess *> (m_algorithm) ->back()->moveKnight(col,rank,i,j,ui->widget->board()))
-                {
-                    ChessBoard * temp = new ChessBoard(m_algorithm->board());
-                    temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
-                        ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
-                                    i, j, QColor(255, 0, 0, 50));
-                        m_selectedFields.push_back(temp);
-                    }
-                }
-                break;
-            case 'b':
-                if(dynamic_cast <ProChess *> (m_algorithm) ->back()->moveBishop(col,rank,i,j,ui->widget->board()))
-                {
-                    ChessBoard * temp = new ChessBoard(m_algorithm->board());
-                    temp->movePiece(col,rank,i,j);
-//                    char temp1 = m_back->checkCheck(temp),temp2 = color == 'w';
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd'))
-                    {
-                        ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
-                                    i, j, QColor(255, 0, 0, 50));
-                        m_selectedFields.push_back(temp);
-                    }
-                }
-                break;
-            case'k':
-                if(dynamic_cast <ProChess *> (m_algorithm) ->back()->moveKing(col,rank,i,j,ui->widget->board()))
-                {
-                    ChessBoard * temp = new ChessBoard(m_algorithm->board());
-                    temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
-                        ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
-                                    i, j, QColor(255, 0, 0, 50));
-                        m_selectedFields.push_back(temp);
-                    }
-                }
-                break;
-            case'q':
-                if(dynamic_cast <ProChess *> (m_algorithm) ->back()->moveQueen(col,rank,i,j,ui->widget->board()))
-                {
-                    ChessBoard * temp = new ChessBoard(m_algorithm->board());
-                    temp->movePiece(col,rank,i,j);
-                    if((m_back->checkCheck(temp) != 'w' && color == 'w'&& m_back->checkCheck(temp) != 'd')||(m_back->checkCheck(temp) != 'b' && color == 'b'&& m_back->checkCheck(temp) != 'd')){
-                        ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
-                                    i, j, QColor(255, 0, 0, 50));
-                        m_selectedFields.push_back(temp);
-                    }
-                }
-                break;
+                ChessView::FieldHighlight *temp = new ChessView::FieldHighlight(
+                            i, j, QColor(255, 0, 0, 50));
+                m_selectedFields.push_back(temp);
 
             }
 
         }
     }
-    if(thread == false){
         m_selectedFieldsCopy = m_selectedFields;
         m_selectedFields.clear();
         this->p1p = p1p;
         this->p1n = p1n;
         this->p2p = p2p;
         this->p2n = p2n;
-    }
-    else {
-        for (ChessView::FieldHighlight *temp : qAsConst(m_selectedFields)) {
-            if(m_algorithm->board()->data(temp->column(),temp->rank())!=' ')
-            {
-                this->thread(m_algorithm->board()->data(temp->column(),temp->rank()));
-            }
-//            ui->widget->addHighlight(temp);
-        }
-        m_selectedFields.clear();
-    }
+
 }
 
 void MainWindow::highlight(int col,int rank)
 {
-    posible(col,rank,false);
+    posible(col,rank);
     for (ChessView::FieldHighlight *temp : qAsConst(m_selectedFieldsCopy)) {
         ui->widget->addHighlight(temp);
     }
@@ -466,7 +391,7 @@ void MainWindow::removeHighlight()
         ui->widget->removeHighlight(temp);
         delete temp;
     }
-    m_selectedFields.clear();
+//    m_selectedFields.clear();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -480,6 +405,26 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     temp.scale(ui->widget->size()/8,Qt::KeepAspectRatio);
     //    smol -= 5;
 
-//    ui->widget->setFieldSize(temp);
+    //    ui->widget->setFieldSize(temp);
+}
+
+void MainWindow::thread(int col, int rank)
+{
+    for(int i = 1;i<=8;i++)
+    {
+        for(int j = 1;j<=8;j++)
+        {
+            if(dynamic_cast<ProChess *>(m_algorithm)->moveP(col,rank,i,j))
+            {
+                if(m_algorithm->board()->data(i,j) != ' ')
+                {
+                    threadPoint(m_algorithm->board()->data(i,j));
+                    updatePoints();
+                }
+            }
+
+        }
+    }
+
 }
 

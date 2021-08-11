@@ -99,3 +99,8 @@ log history::secondLastMove()
     }
 }
 
+void history::popBack()
+{
+    logs.pop_back();
+}
+
