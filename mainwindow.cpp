@@ -153,12 +153,17 @@ void MainWindow::viewClicked(const QPoint &field)
         }
     } else
     {
+        if(!dynamic_cast<ProChess *>(m_algorithm)->moveP(m_clickPoint.x(),m_clickPoint.y(),field.x(), field.y()))
+        {
+            decresPoint();
+        }
         if(field != m_clickPoint)
         {
             bool tr = false;
             if(dynamic_cast<ProChess *>(m_algorithm)->moveP(m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()))
                 tr = true;
               lastElimedPice = ' ';
+
               m_algorithm->move(m_clickPoint, field);
 //            ui->widget->board()->movePiece(
 //            m_clickPoint.x(), m_clickPoint.y(), field.x(), field.y()
@@ -167,7 +172,10 @@ void MainWindow::viewClicked(const QPoint &field)
                 if(tr)
               thread(field.x(),field.y());
               updatePoints();
+
+
         };
+
         m_clickPoint = QPoint();
 
 
@@ -502,6 +510,23 @@ void MainWindow::thread(int col, int rank)
             }
 
         }
+    }
+
+}
+
+void MainWindow::decresPoint()
+{
+    switch (m_algorithm->currentPlayer()) {
+    case ChessAlgorithm::Player1:
+        p1n -= 1;
+        updatePoints();
+        break;
+    case ChessAlgorithm::Player2:
+        p2n -= 1;
+        updatePoints();
+        break;
+    default:
+        break;
     }
 
 }

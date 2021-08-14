@@ -60,6 +60,7 @@ private:
     void resizeEvent(QResizeEvent* event);
     void thread(int col,int rank);
     int extra = 1;
+    void decresPoint();
 
 
 };
